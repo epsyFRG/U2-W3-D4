@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>EPICODE - Dettaglio Immagine</title>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- CSS -->
+    <style>
+      .jumbotron {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+        margin-bottom: 0;
+        background-color: #fff;
+      }
+      @media (min-width: 768px) {
+        .jumbotron {
+          padding-top: 6rem;
+          padding-bottom: 6rem;
+        }
+      }
+      .jumbotron-heading {
+        font-weight: 300;
+      }
+      .navbar .container-fluid {
+        padding-left: 8em;
+        padding-right: 8em;
+      }
+      /* Modifiche per rendere visibile il background dinamico */
+      .album,
+      .container,
+      .card {
+        background: transparent !important;
+      }
+      .card {
+        box-shadow: 0 0 30px 5px rgba(0, 0, 0, 0.15);
+        border: 1px solid #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- Navbar -->
+      <div class="collapse bg-dark" id="navbarToggleExternalContent">
+        <div class="container">
+          <div class="row flex-column">
+            <div class="col-sm-8 col-md-7 py-4 text-white">
+              <h4>About</h4>
+              <p class="text-gray">
+                Add some information about the album below, the author, or any
+                other background context. Make it a few sentences long so folks
+                can pick up some informative tidbits. Then, link them off to
+                some social networking sites or contact information.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid justify-content-between">
+          <a
+            href="pexels-start.html"
+            class="navbar-brand d-flex align-items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              aria-hidden="true"
+              class="me-2"
+              viewBox="0 0 24 24"
+              focusable="false"
+            >
+              <path
+                d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+              />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+            <strong>Album</strong>
+          </a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarToggleExternalContent"
+            aria-controls="navbarToggleExternalContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main role="main">
+      <!-- Jumbotron -->
+      <section class="jumbotron text-center">
+        <div class="container">
+          <h1 class="jumbotron-heading">Dettaglio Immagine</h1>
+        </div>
+      </section>
+      <!-- Album -->
+      <div class="album py-5 bg-light">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              <div id="detail-content"></div>
+            </div>
+          </div>
+          <div class="row justify-content-center mt-4">
+            <div class="col-lg-8 text-center">
+              <button id="back-btn" class="btn btn-secondary">
+                Torna indietro
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Footer -->
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Back to top</a>
+        </p>
+      </div>
+    </footer>
+    <!-- Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Recupera i parametri dalla query string
+      const params = new URLSearchParams(window.location.search)
+      const img = decodeURIComponent(params.get("img") || "")
+      const artist = decodeURIComponent(params.get("artist") || "")
+      const artistUrl = decodeURIComponent(params.get("artistUrl") || "")
+
+      const detailDiv = document.getElementById("detail-content")
+      if (img && artist && artistUrl) {
+        detailDiv.innerHTML = `
+          <div class="card shadow-lg">
+            <img id="main-img" src="${img}" alt="Immagine dettaglio" class="card-img-top" style="max-height:500px; object-fit:contain; background:#eee;" />
+            <div class="card-body text-center">
+              <h2 class="card-title mb-3">${artist}</h2>
+              <a href="${artistUrl}" target="_blank" class="btn btn-primary mb-2">Pagina artista su Pexels</a>
+            </div>
+          </div>
+        `
+        // Calcolo media colori
+        const hiddenImg = new window.Image()
+        hiddenImg.crossOrigin = "Anonymous"
+        hiddenImg.src = img
+        hiddenImg.onload = function () {
+          const canvas = document.createElement("canvas")
+          canvas.width = hiddenImg.naturalWidth
+          canvas.height = hiddenImg.naturalHeight
+          const ctx = canvas.getContext("2d")
+          ctx.drawImage(hiddenImg, 0, 0)
+          try {
+            const data = ctx.getImageData(
+              0,
+              0,
+              canvas.width,
+              canvas.height
+            ).data
+            let r = 0,
+              g = 0,
+              b = 0,
+              count = 0
+            for (let i = 0; i < data.length; i += 4) {
+              r += data[i]
+              g += data[i + 1]
+              b += data[i + 2]
+              count++
+            }
+            r = Math.round(r / count)
+            g = Math.round(g / count)
+            b = Math.round(b / count)
+            document.body.style.background = `rgb(${r},${g},${b})`
+          } catch (e) {
+            // In caso di errore (CORS), fallback
+            document.body.style.background = "#f8f9fa"
+          }
+        }
+      } else {
+        detailDiv.innerHTML = '<p class="text-danger">Dati non disponibili.</p>'
+      }
+
+      document.getElementById("back-btn").addEventListener("click", () => {
+        window.history.back()
+      })
+    </script>
+  </body>
+</html>
